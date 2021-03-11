@@ -1,0 +1,306 @@
+View(X0903_RTL_Parasites)
+> if (!require("pacman")) install.packages("pacman")
+载入需要的程辑包：pacman
+> pacman::p_load(here, usethis, ggplot2, dplyr, magrittr, car)
+> lamb_Age0 <- filter (X0903_RTL_Parasites, Age == 0 & Strongyles <5300)
+> View(lamb_Age0)
+> lamb_Age0$Sex <- as.factor(lamb_Age0$Sex)
+> lamb_Age0$qPCRRow <- as.factor(lamb_Age0$qPCRRow)
+> str(lamb_Age0$Sex)
+Factor w/ 2 levels "F","M": 2 1 1 1 2 2 1 2 2 2 ...
+> str(lamb_Age0$qPCRRow)
+Factor w/ 8 levels "A","B","C","D",..: 1 4 4 5 8 5 4 5 5 5 ...
+> install.packages("lme4")
+Error in install.packages : Updating loaded packages
+> library(lme4)
+载入需要的程辑包：Matrix
+Warning message:
+  程辑包‘lme4’是用R版本4.0.4 来建造的 
+> fixed_model1 <- lmer(RTL~Strongyles+Sex+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> summary(fixed_model1)
+Linear mixed model fit by maximum likelihood  ['lmerMod']
+Formula: 
+  RTL ~ Strongyles + Sex + (1 | Year) + (1 | qPCRPlate) + (1 |  
+                                                             qPCRRow)
+Data: lamb_Age0
+
+AIC      BIC   logLik deviance df.resid 
+117.5    151.0    -51.8    103.5      875 
+
+Scaled residuals: 
+  Min      1Q  Median      3Q     Max 
+-3.3920 -0.6452 -0.0086  0.5918  3.9582 
+
+Random effects:
+  Groups    Name        Variance Std.Dev.
+qPCRPlate (Intercept) 0.003893 0.06239 
+Year      (Intercept) 0.002532 0.05031 
+qPCRRow   (Intercept) 0.003481 0.05900 
+Residual              0.060481 0.24593 
+Number of obs: 882, groups:  
+  qPCRPlate, 95; Year, 17; qPCRRow, 8
+
+Fixed effects:
+  Estimate Std. Error t value
+(Intercept)  1.886e+00  2.888e-02  65.297
+Strongyles   3.699e-05  1.287e-05   2.874
+SexM        -6.263e-03  1.748e-02  -0.358
+
+Correlation of Fixed Effects:
+  (Intr) Strngy
+Strongyles -0.246       
+SexM       -0.223 -0.197
+> fixed_model1_NULL <- lmer(RTL~Sex+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> anova(fixed_model1_NULL,fixed_model1)
+Data: lamb_Age0
+Models:
+  fixed_model1_NULL: RTL ~ Sex + (1 | Year) + (1 | qPCRPlate) + (1 | qPCRRow)
+fixed_model1: RTL ~ Strongyles + Sex + (1 | Year) + (1 | qPCRPlate) + (1 | 
+                                                                         fixed_model1:     qPCRRow)
+npar    AIC    BIC  logLik deviance
+fixed_model1_NULL    6 123.76 152.45 -55.879   111.76
+fixed_model1         7 117.54 151.02 -51.772   103.54
+Chisq Df Pr(>Chisq)   
+fixed_model1_NULL                       
+fixed_model1      8.215  1   0.004155 **
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> fixed_model2 <- lmer(RTL~Strongyles+Weight+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> summary(fixed_model2)
+Linear mixed model fit by maximum likelihood  ['lmerMod']
+Formula: 
+  RTL ~ Strongyles + Weight + (1 | Year) + (1 | qPCRPlate) + (1 |  
+                                                                qPCRRow)
+Data: lamb_Age0
+
+AIC      BIC   logLik deviance df.resid 
+116.5    150.0    -51.2    102.5      875 
+
+Scaled residuals: 
+  Min      1Q  Median      3Q     Max 
+-3.4002 -0.6519 -0.0066  0.5863  3.9270 
+
+Random effects:
+  Groups    Name        Variance Std.Dev.
+qPCRPlate (Intercept) 0.003903 0.06247 
+Year      (Intercept) 0.002530 0.05030 
+qPCRRow   (Intercept) 0.003468 0.05889 
+Residual              0.060401 0.24577 
+Number of obs: 882, groups:  
+  qPCRPlate, 95; Year, 17; qPCRRow, 8
+
+Fixed effects:
+  Estimate Std. Error t value
+(Intercept)  1.936e+00  5.602e-02  34.558
+Strongyles   3.271e-05  1.299e-05   2.518
+Weight      -3.955e-03  3.649e-03  -1.084
+
+Correlation of Fixed Effects:
+  (Intr) Strngy
+Strongyles -0.355       
+Weight     -0.865  0.240
+> fixed_model2_NULL <- lmer(RTL~Weight+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> anova(fixed_model2_NULL,fixed_model2)
+Data: lamb_Age0
+Models:
+  fixed_model2_NULL: RTL ~ Weight + (1 | Year) + (1 | qPCRPlate) + (1 | qPCRRow)
+fixed_model2: RTL ~ Strongyles + Weight + (1 | Year) + (1 | qPCRPlate) + (1 | 
+                                                                            fixed_model2:     qPCRRow)
+npar    AIC    BIC  logLik deviance
+fixed_model2_NULL    6 120.81 149.50 -54.406   108.81
+fixed_model2         7 116.50 149.97 -51.249   102.50
+Chisq Df Pr(>Chisq)  
+fixed_model2_NULL                       
+fixed_model2      6.3137  1    0.01198 *
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> fixed_model3 <- lmer(RTL~Strongyles+Sex+Weight+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> summary (fixed_model3)
+Linear mixed model fit by maximum likelihood  ['lmerMod']
+Formula: 
+  RTL ~ Strongyles + Sex + Weight + (1 | Year) + (1 | qPCRPlate) +  
+  (1 | qPCRRow)
+Data: lamb_Age0
+
+AIC      BIC   logLik deviance df.resid 
+118.5    156.8    -51.2    102.5      874 
+
+Scaled residuals: 
+  Min      1Q  Median      3Q     Max 
+-3.3991 -0.6500 -0.0068  0.5870  3.9291 
+
+Random effects:
+  Groups    Name        Variance Std.Dev.
+qPCRPlate (Intercept) 0.003903 0.06247 
+Year      (Intercept) 0.002530 0.05030 
+qPCRRow   (Intercept) 0.003469 0.05889 
+Residual              0.060401 0.24577 
+Number of obs: 882, groups:  
+  qPCRPlate, 95; Year, 17; qPCRRow, 8
+
+Fixed effects:
+  Estimate Std. Error t value
+(Intercept)  1.936e+00  5.663e-02  34.182
+Strongyles   3.285e-05  1.348e-05   2.436
+SexM        -7.313e-04  1.829e-02  -0.040
+Weight      -3.910e-03  3.819e-03  -1.024
+
+Correlation of Fixed Effects:
+  (Intr) Strngy SexM  
+Strongyles -0.377              
+SexM        0.146 -0.268       
+Weight     -0.861  0.300 -0.295
+> fixed_model3_NULL <- lmer(RTL~Sex+Weight+(1|Year)+(1|qPCRPlate)+(1|qPCRRow), data = lamb_Age0, REML = FALSE)
+> anova(fixed_model3_NULL,fixed_model3)
+Data: lamb_Age0
+Models:
+  fixed_model3_NULL: RTL ~ Sex + Weight + (1 | Year) + (1 | qPCRPlate) + (1 | qPCRRow)
+fixed_model3: RTL ~ Strongyles + Sex + Weight + (1 | Year) + (1 | qPCRPlate) + 
+  fixed_model3:     (1 | qPCRRow)
+npar    AIC    BIC  logLik deviance
+fixed_model3_NULL    7 122.41 155.88 -54.204   108.41
+fixed_model3         8 118.50 156.75 -51.248   102.50
+Chisq Df Pr(>Chisq)  
+fixed_model3_NULL                       
+fixed_model3      5.9118  1    0.01504 *
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> sheep_dataset <- filter (X0903_RTL_Parasites, Strongyles<5300)
+> model1 <- lm (RTL~Strongyles,sheep_dataset)
+> summary (model1)
+
+Call:
+  lm(formula = RTL ~ Strongyles, data = sheep_dataset)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.06259 -0.18888 -0.00473  0.19140  1.12371 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 1.779e+00  6.420e-03 277.114   <2e-16 ***
+  Strongyles  8.955e-05  1.037e-05   8.632   <2e-16 ***
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2918 on 3034 degrees of freedom
+Multiple R-squared:  0.02397,	Adjusted R-squared:  0.02365 
+F-statistic:  74.5 on 1 and 3034 DF,  p-value: < 2.2e-16
+
+> 
+  > model2 <- lm (RTL~Age,sheep_dataset)
+> summary (model2)
+
+Call:
+  lm(formula = RTL ~ Age, data = sheep_dataset)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.07649 -0.19603 -0.00677  0.18560  1.20620 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.853477   0.007444 248.998  < 2e-16 ***
+  Age         -0.015122   0.001834  -8.244 2.45e-16 ***
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2922 on 3034 degrees of freedom
+Multiple R-squared:  0.02191,	Adjusted R-squared:  0.02159 
+F-statistic: 67.96 on 1 and 3034 DF,  p-value: 2.448e-16
+
+> model3 <- lm (RTL~Strongyles+Age,sheep_dataset)
+> summary(model3)
+
+Call:
+  lm(formula = RTL ~ Strongyles + Age, data = sheep_dataset)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.05842 -0.19342 -0.00782  0.18692  1.18097 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.817e+00  9.571e-03 189.876  < 2e-16 ***
+  Strongyles   6.649e-05  1.118e-05   5.946 3.06e-09 ***
+  Age         -1.062e-02  1.975e-03  -5.376 8.20e-08 ***
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2905 on 3033 degrees of freedom
+Multiple R-squared:  0.03318,	Adjusted R-squared:  0.03254 
+F-statistic: 52.04 on 2 and 3033 DF,  p-value: < 2.2e-16
+
+> model4 <- lm (RTL~Strongyles,lamb_Age0)
+> summary (model4)
+
+Call:
+  lm(formula = RTL ~ Strongyles, data = lamb_Age0)
+
+Residuals:
+  Min      1Q  Median      3Q     Max 
+-0.9165 -0.1822 -0.0017  0.1735  1.0220 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 1.884e+00  1.267e-02 148.707  < 2e-16 ***
+  Strongyles  3.388e-05  1.259e-05   2.692  0.00724 ** 
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2651 on 880 degrees of freedom
+Multiple R-squared:  0.008166,	Adjusted R-squared:  0.007039 
+F-statistic: 7.245 on 1 and 880 DF,  p-value: 0.007243
+
+> model5 <- lm (RTL~Strongyles+Sex,lamb_Age0)
+> summary (model5)
+
+Call:
+  lm(formula = RTL ~ Strongyles + Sex, data = lamb_Age0)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-0.91379 -0.18150 -0.00252  0.17334  1.02485 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.886e+00  1.433e-02 131.562  < 2e-16 ***
+  Strongyles   3.455e-05  1.286e-05   2.686  0.00738 ** 
+  SexM        -4.632e-03  1.828e-02  -0.253  0.79998    
+---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2652 on 879 degrees of freedom
+Multiple R-squared:  0.008239,	Adjusted R-squared:  0.005982 
+F-statistic: 3.651 on 2 and 879 DF,  p-value: 0.02636
+
+> model6 <- lm (RTL~Strongyles+Weight,lamb_Age0)
+> summary (model6)
+
+Call:
+  lm(formula = RTL ~ Strongyles + Weight, data = lamb_Age0)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-0.91267 -0.18305 -0.00411  0.17115  1.01656 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.938e+00  5.080e-02  38.144   <2e-16 ***
+  Strongyles   2.992e-05  1.310e-05   2.284   0.0226 *  
+  Weight      -4.038e-03  3.712e-03  -1.088   0.2770    
+---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.265 on 879 degrees of freedom
+Multiple R-squared:  0.0095,	Adjusted R-squared:  0.007246 
+F-statistic: 4.215 on 2 and 879 DF,  p-value: 0.01507
